@@ -1,1 +1,13 @@
 .obsidian/**
+
+# ESP-IDF specific
+build/
+sdkconfig.old
+dependencies.lock
+managed_components/
+
+# Mac OS
+.DS_Store
+
+# IDEs
+.vscode/

@@ -9,7 +9,7 @@ static const char *TAG = "LAB1_RGB_TIMING";
 // กำหนดขา GPIO ตามผังวงจร
 #define LED_R_GPIO        GPIO_NUM_4
 #define LED_G_GPIO        GPIO_NUM_5
-#define LED_B_GPIO        GPIO_NUM_6
+#define LED_B_GPIO        GPIO_NUM_23
 
 // กำหนดเวลาหน่วง (หน่วยมิลลิวินาที) ตามเงื่อนไขของใบงาน
 #define TIME_ACTIVE_MS    2500  // สลับติด-ดับทุกๆ 2.5 วินาที
