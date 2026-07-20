@@ -27,10 +27,10 @@ void init_rgb_gpio(void)
     };
     gpio_config(&io_conf);
 
-    // เริ่มต้นให้ LED ทุกสีดับสนิท
-    gpio_set_level(LED_R_GPIO, 0);
-    gpio_set_level(LED_G_GPIO, 0);
-    gpio_set_level(LED_B_GPIO, 0);
+    // เริ่มต้นให้ LED ทุกสีดับสนิท (Common Anode: 1 คือดับ)
+    gpio_set_level(LED_R_GPIO, 1);
+    gpio_set_level(LED_G_GPIO, 1);
+    gpio_set_level(LED_B_GPIO, 1);
 }
 
 void app_main(void)
@@ -43,30 +43,30 @@ void app_main(void)
         // เฟสที่ 1: จ่ายแสงสีแดง (Red Phase)
         // -----------------------------------------------------------
         ESP_LOGI(TAG, "Phase R: ON");
-        gpio_set_level(LED_R_GPIO, 1);
+        gpio_set_level(LED_R_GPIO, 0);
         vTaskDelay(pdMS_TO_TICKS(TIME_ACTIVE_MS));
         
-        gpio_set_level(LED_R_GPIO, 0);
+        gpio_set_level(LED_R_GPIO, 1);
         ESP_LOGI(TAG, "Phase R: OFF");
 
         // -----------------------------------------------------------
         // เฟสที่ 2: จ่ายแสงสีเขียว (Green Phase)
         // -----------------------------------------------------------
         ESP_LOGI(TAG, "Phase G: ON");
-        gpio_set_level(LED_G_GPIO, 1);
+        gpio_set_level(LED_G_GPIO, 0);
         vTaskDelay(pdMS_TO_TICKS(TIME_ACTIVE_MS));
         
-        gpio_set_level(LED_G_GPIO, 0);
+        gpio_set_level(LED_G_GPIO, 1);
         ESP_LOGI(TAG, "Phase G: OFF");
 
         // -----------------------------------------------------------
         // เฟสที่ 3: จ่ายแสงสีน้ำเงิน (Blue Phase)
         // -----------------------------------------------------------
         ESP_LOGI(TAG, "Phase B: ON");
-        gpio_set_level(LED_B_GPIO, 1);
+        gpio_set_level(LED_B_GPIO, 0);
         vTaskDelay(pdMS_TO_TICKS(TIME_ACTIVE_MS));
         
-        gpio_set_level(LED_B_GPIO, 0);
+        gpio_set_level(LED_B_GPIO, 1);
         ESP_LOGI(TAG, "Phase B: OFF");
 
         // -----------------------------------------------------------
