@@ -10,14 +10,14 @@ static const char *TAG = "LAB2_ADC_SETTLING";
 // กำหนดขาภาคส่ง RGB LED
 #define TX_LED_R_GPIO        GPIO_NUM_4
 #define TX_LED_G_GPIO        GPIO_NUM_5
-#define TX_LED_B_GPIO        GPIO_NUM_6
+#define TX_LED_B_GPIO        GPIO_NUM_23
 
-// กำหนดขาภาครับอนาล็อก (ESP32-C6: ADC1_CH2 คือ GPIO2)
+// กำหนดขาภาครับอนาล็อก (ESP32: ADC1_CH6 คือ GPIO34)
 #define RX_ADC_UNIT          ADC_UNIT_1
-#define RX_ADC_CHANNEL       ADC_CHANNEL_2
+#define RX_ADC_CHANNEL       ADC_CHANNEL_6
 
 #define NUM_SAMPLES          20
-#define SAMPLING_DELAY_MS    150   // 3000ms / 20 samples = 150ms
+#define SAMPLING_DELAY_MS    2    // ลดเหลือ 2ms เพื่อจับภาพการคายประจุที่เร็วมากๆ
 
 void init_hardware(adc_oneshot_unit_handle_t *adc_handle)
 {
@@ -31,10 +31,10 @@ void init_hardware(adc_oneshot_unit_handle_t *adc_handle)
     };
     gpio_config(&io_conf);
 
-    // ดับไฟเริ่มต้น
-    gpio_set_level(TX_LED_R_GPIO, 0);
-    gpio_set_level(TX_LED_G_GPIO, 0);
-    gpio_set_level(TX_LED_B_GPIO, 0);
+    // ดับไฟเริ่มต้น (Common Anode: 1 คือดับ)
+    gpio_set_level(TX_LED_R_GPIO, 1);
+    gpio_set_level(TX_LED_G_GPIO, 1);
+    gpio_set_level(TX_LED_B_GPIO, 1);
 
     // 2. ตั้งค่าหน่วย ADC Unit 1 ธรรมดา (ไม่มีการ Calibrate เพื่อดูบิตดิบ)
     adc_oneshot_unit_init_cfg_t init_config = {
@@ -79,24 +79,22 @@ void app_main(void)
 
     while (1) {
         // --- รอบไฟสีแดง ---
-        gpio_set_level(TX_LED_R_GPIO, 1);
-        vTaskDelay(pdMS_TO_TICKS(2500)); // เปล่งแสงนาน 2.5 วินาที
-        gpio_set_level(TX_LED_R_GPIO, 0); // ดับไฟเข้าสู่จังหวะพัก (Rest Phase)
-        sample_and_print(adc1_handle, "R");
-        printf("--------------------------------------------------------------\n");
+        gpio_set_level(TX_LED_R_GPIO, 0); // เปิดไฟ (Common Anode: 0 คือติด)
+        vTaskDelay(pdMS_TO_TICKS(500)); // ลดเวลาเปล่งแสงเหลือ 0.5 วินาทีให้กระพริบเร็วขึ้น
+        gpio_set_level(TX_LED_R_GPIO, 1); // ดับไฟ
 
         // --- รอบไฟสีเขียว ---
-        gpio_set_level(TX_LED_G_GPIO, 1);
-        vTaskDelay(pdMS_TO_TICKS(2500)); 
         gpio_set_level(TX_LED_G_GPIO, 0); 
-        sample_and_print(adc1_handle, "G");
-        printf("--------------------------------------------------------------\n");
+        vTaskDelay(pdMS_TO_TICKS(500)); 
+        gpio_set_level(TX_LED_G_GPIO, 1); 
 
         // --- รอบไฟสีน้ำเงิน ---
-        gpio_set_level(TX_LED_B_GPIO, 1);
-        vTaskDelay(pdMS_TO_TICKS(2500)); 
         gpio_set_level(TX_LED_B_GPIO, 0); 
+        vTaskDelay(pdMS_TO_TICKS(500)); 
+        gpio_set_level(TX_LED_B_GPIO, 1); 
+        // วัดและปริ้นเฉพาะสีน้ำเงิน
         sample_and_print(adc1_handle, "B");
+        vTaskDelay(pdMS_TO_TICKS(2700));
         printf("==============================================================\n");
     }
 }

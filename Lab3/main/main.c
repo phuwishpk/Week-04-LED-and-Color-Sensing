@@ -13,10 +13,10 @@ static const char *TAG = "LAB3_STAT_FILTER";
 
 #define TX_LED_R_GPIO        GPIO_NUM_4
 #define TX_LED_G_GPIO        GPIO_NUM_5
-#define TX_LED_B_GPIO        GPIO_NUM_6
+#define TX_LED_B_GPIO        GPIO_NUM_23
 
 #define RX_ADC_UNIT          ADC_UNIT_1
-#define RX_ADC_CHANNEL       ADC_CHANNEL_2
+#define RX_ADC_CHANNEL       ADC_CHANNEL_0
 #define V_REF                3300  
 
 #define NUM_SAMPLES          50    // สุ่มเก็บ 50 แซมเปิ้ล
@@ -38,9 +38,10 @@ void init_hardware(adc_oneshot_unit_handle_t *adc_handle)
     };
     gpio_config(&io_conf);
     
-    gpio_set_level(TX_LED_R_GPIO, 0);
-    gpio_set_level(TX_LED_G_GPIO, 0);
-    gpio_set_level(TX_LED_B_GPIO, 0);
+    // ดับไฟเริ่มต้น (Common Anode: 1 คือดับ)
+    gpio_set_level(TX_LED_R_GPIO, 1);
+    gpio_set_level(TX_LED_G_GPIO, 1);
+    gpio_set_level(TX_LED_B_GPIO, 1);
 
     // ตั้งค่าพอร์ต ADC
     adc_oneshot_unit_init_cfg_t init_config = { .unit_id = RX_ADC_UNIT, .clk_src = ADC_DIGI_CLK_SRC_DEFAULT };
@@ -132,22 +133,22 @@ void app_main(void)
     printf("==============================================================\n");
 
     while (1) {
-        // เฟสเปิดสีแดง
-        gpio_set_level(TX_LED_R_GPIO, 1);
+        // เฟสเปิดสีแดง (Common Anode: 0 คือติด, 1 คือดับ)
+        gpio_set_level(TX_LED_R_GPIO, 0);
         vTaskDelay(pdMS_TO_TICKS(2500)); 
-        gpio_set_level(TX_LED_R_GPIO, 0); 
+        gpio_set_level(TX_LED_R_GPIO, 1); 
         process_color_sensing(adc1_handle, "R");
 
         // เฟสเปิดสีเขียว
-        gpio_set_level(TX_LED_G_GPIO, 1);
+        gpio_set_level(TX_LED_G_GPIO, 0);
         vTaskDelay(pdMS_TO_TICKS(2500)); 
-        gpio_set_level(TX_LED_G_GPIO, 0); 
+        gpio_set_level(TX_LED_G_GPIO, 1); 
         process_color_sensing(adc1_handle, "G");
 
         // เฟสเปิดสีน้ำเงิน
-        gpio_set_level(TX_LED_B_GPIO, 1);
+        gpio_set_level(TX_LED_B_GPIO, 0);
         vTaskDelay(pdMS_TO_TICKS(2500)); 
-        gpio_set_level(TX_LED_B_GPIO, 0); 
+        gpio_set_level(TX_LED_B_GPIO, 1); 
         process_color_sensing(adc1_handle, "B");
 
         // ดับไฟทุกดวงและพักรอบระบบ 3 วินาที เพื่อรีเซ็ตพลังงานทางกายภาพ
